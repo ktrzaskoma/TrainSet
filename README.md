@@ -1,6 +1,6 @@
 # Trainset
 
-**Trainset** is a full-stack web application for managing train schedules and passenger services of the Warsaw Commuter Railway (*Warszawska Kolej Dojazdowa*). It is compliant with the [GTFS (General Transit Feed Specification)](https://gtfs.org/) standard and built on a microservices architecture.
+**Trainset** is a full-stack web application for managing train schedules and passenger services of the Warsaw Commuter Railway (*pl. Warszawska Kolej Dojazdowa*). It is compliant with the [GTFS (General Transit Feed Specification)](https://gtfs.org/) standard and built on a microservices architecture.
 
 ---
 
