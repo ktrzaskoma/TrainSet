@@ -1,0 +1,32 @@
+server:
+  port: 8084
+
+spring:
+  datasource:
+    url: jdbc:postgresql://postgres:5432/trainset_user
+    driver-class-name: org.postgresql.Driver
+    username: ${PG_DB_USERNAME}
+    password: ${PG_DB_PASSWORD}
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    show-sql: false
+
+feign:
+  ticketing:
+    name: ticketingFeignClient
+    url: http://ticketing:8082
+  notification:
+    name: notificationFeignClient
+    url: http://notification:8083
+
+
+
+
+
+

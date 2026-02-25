@@ -1,0 +1,52 @@
+server:
+  port: 8083
+
+spring:
+  datasource:
+    url: jdbc:postgresql://postgres:5432/trainset_notification
+    driver-class-name: org.postgresql.Driver
+    username: ${PG_DB_USERNAME}
+    password: ${PG_DB_PASSWORD}
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    show-sql: false
+
+  mail:
+    enabled: true
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+  notification:
+    email:
+      from: ${MAIL_USERNAME}
+
+feign:
+  schedule:
+    name: scheduleFeignClient
+    url: http://schedule:8081
+  ticketing:
+    name: ticketingFeignClient
+    url: http://ticketing:8082
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always

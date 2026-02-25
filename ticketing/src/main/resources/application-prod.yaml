@@ -1,0 +1,43 @@
+server:
+  port: 8082
+
+spring:
+  datasource:
+    url: jdbc:postgresql://postgres:5432/trainset_ticketing
+    driver-class-name: org.postgresql.Driver
+    username: ${PG_DB_USERNAME}
+    password: ${PG_DB_PASSWORD}
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    show-sql: false
+
+feign:
+  schedule:
+    name: scheduleFeignClient
+    url: http://schedule:8081
+  notification:
+    name: notificationFeignClient
+    url: http://notification:8083
+
+ticketing:
+  validation:
+    enabled: true
+    fallback-to-basic: true
+    schedule-service-timeout: 5000
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+
+
+
+
+

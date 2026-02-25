@@ -1,0 +1,45 @@
+server:
+  port: 8082
+
+spring:
+  datasource:
+    url: jdbc:h2:mem:ticketing_db
+    driver-class-name: org.h2.Driver
+    username: ${H2_DB_USERNAME}
+    password: ${H2_DB_PASSWORD}
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+        format_sql: true
+    show-sql: false
+
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+      settings:
+        web-allow-others: true
+
+feign:
+  schedule:
+    name: scheduleFeignClient
+    url: http://localhost:8081
+  notification:
+    name: notificationFeignClient
+    url: http://localhost:8083
+
+ticketing:
+  validation:
+    enabled: true
+    fallback-to-basic: true
+    schedule-service-timeout: 5000
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics

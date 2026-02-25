@@ -1,0 +1,166 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: trainset-postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./trainset_init.sql:/docker-entrypoint-initdb.d/trainset_init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U trainset"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - trainset-network
+
+  gateway:
+    build:
+      context: ../../gateway
+      dockerfile: Dockerfile
+    image: trainset-gateway
+    container_name: trainset-gateway
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+    depends_on:
+      schedule:
+        condition: service_healthy
+      ticketing:
+        condition: service_healthy
+      notification:
+        condition: service_healthy
+      user:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    networks:
+      - trainset-network
+    restart: unless-stopped
+
+  user:
+    build:
+      context: ../../user
+      dockerfile: Dockerfile
+    image: trainset-user
+    container_name: trainset-user
+    ports:
+      - "8084:8084"
+    env_file:
+      - ./.env
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8084/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    networks:
+      - trainset-network
+    restart: unless-stopped
+
+  schedule:
+    build:
+      context: ../../schedule
+      dockerfile: Dockerfile
+    image: trainset-schedule
+    container_name: trainset-schedule
+    ports:
+      - "8081:8081"
+    env_file:
+      - ./.env
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8081/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    networks:
+      - trainset-network
+    restart: unless-stopped
+
+  ticketing:
+    build:
+      context: ../../ticketing
+      dockerfile: Dockerfile
+    image: trainset-ticketing
+    container_name: trainset-ticketing
+    ports:
+      - "8082:8082"
+    env_file:
+      - ./.env
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8082/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    networks:
+      - trainset-network
+    restart: unless-stopped
+
+  notification:
+    build:
+      context: ../../notification
+      dockerfile: Dockerfile
+    image: trainset-notification
+    container_name: trainset-notification
+    ports:
+      - "8083:8083"
+    env_file:
+      - ./.env
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8083/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    networks:
+      - trainset-network
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ../../frontend
+      dockerfile: Dockerfile
+    image: trainset-frontend
+    container_name: trainset-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      gateway:
+        condition: service_healthy
+    networks:
+      - trainset-network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  trainset-network:
+    name: trainset-network
+    driver: bridge
+

@@ -1,0 +1,41 @@
+server:
+  port: 8081
+
+spring:
+  datasource:
+    url: jdbc:postgresql://postgres:5432/trainset_schedule
+    driver-class-name: org.postgresql.Driver
+    username: ${PG_DB_USERNAME:trainset}
+    password: ${PG_DB_PASSWORD:trainset123}
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    show-sql: false
+
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+      enabled: true
+
+feign:
+  user:
+    name: userFeignClient
+    url: http://user:8084
+  ticketing:
+    name: ticketingFeignClient
+    url: http://ticketing:8082
+  notification:
+    name: notificationFeignClient
+    url: http://notification:8083
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,gateway

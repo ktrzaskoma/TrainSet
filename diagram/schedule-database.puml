@@ -1,0 +1,158 @@
+@startuml Schedule Service Database
+
+' Ustawienia wizualne
+skinparam linetype ortho
+skinparam roundcorner 0
+skinparam shadowing false
+skinparam nodesep 1
+skinparam ranksep 1
+skinparam padding 0
+skinparam defaultFontSize 7
+skinparam class {
+    BackgroundColor White
+    ArrowColor #2c3e50
+    BorderColor #2c3e50
+}
+skinparam entity {
+    AttributeFontSize 6
+}
+
+' === WIERSZ 1: Import ===
+entity "Import" as import {
+  id : BIGINT <<PK>>
+  --
+  filename : VARCHAR
+  uploaded_by : BIGINT
+  upload_date : TIMESTAMP
+  is_active : BOOLEAN
+  start_date : DATE
+  end_date : DATE
+}
+
+' === WIERSZ 2: Główne encje GTFS ===
+together {
+  entity "Agency" as agency {
+    agency_id : VARCHAR <<PK>>
+    --
+    agency_name : VARCHAR
+    agency_url : VARCHAR
+    agency_lang : VARCHAR
+    agency_timezone : VARCHAR
+    upload_id : BIGINT <<FK>>
+  }
+
+  entity "Route" as route {
+    route_id : VARCHAR <<PK>>
+    --
+    agency_id : VARCHAR <<FK>>
+    route_short_name : VARCHAR
+    route_long_name : VARCHAR
+    route_type : INTEGER
+    route_color : VARCHAR
+    route_text_color : VARCHAR
+    upload_id : BIGINT <<FK>>
+  }
+
+  entity "Stop" as stop {
+    stop_id : VARCHAR <<PK>>
+    --
+    stop_name : VARCHAR
+    stop_lat : DECIMAL
+    stop_lon : DECIMAL
+    wheelchair_boarding : INTEGER
+    upload_id : BIGINT <<FK>>
+  }
+
+  entity "CalendarDate" as calendar {
+    id : BIGINT <<PK>>
+    --
+    service_id : VARCHAR
+    date : DATE
+    exception_type : INTEGER
+    upload_id : BIGINT <<FK>>
+  }
+}
+
+' === WIERSZ 3: Trip i StopTime ===
+together {
+  entity "Trip" as trip {
+    trip_id : VARCHAR <<PK>>
+    --
+    route_id : VARCHAR <<FK>>
+    service_id : VARCHAR
+    trip_headsign : VARCHAR
+    trip_short_name : VARCHAR
+    direction_id : INTEGER
+    shape_id : VARCHAR
+    wheelchair_accessible : INTEGER
+    bikes_allowed : INTEGER
+    upload_id : BIGINT <<FK>>
+  }
+
+  entity "StopTime" as stop_time {
+    id : BIGINT <<PK>>
+    --
+    trip_id : VARCHAR <<FK>>
+    stop_id : VARCHAR <<FK>>
+    stop_sequence : INTEGER
+    arrival_time : TIME
+    departure_time : TIME
+    upload_id : BIGINT <<FK>>
+  }
+}
+
+' === WIERSZ 4: Dane dynamiczne ===
+together {
+  entity "Delay" as delay {
+    id : BIGINT <<PK>>
+    --
+    trip_id : VARCHAR
+    stop_id : VARCHAR
+    stop_sequence : INTEGER
+    delay_minutes : INTEGER
+    original_departure_time : TIME
+    actual_departure_time : TIME
+    delay_type : VARCHAR
+    status : VARCHAR
+    reason : VARCHAR
+    reason_code : VARCHAR
+    created_at : TIMESTAMP
+    updated_at : TIMESTAMP
+    resolved_at : TIMESTAMP
+  }
+
+  entity "Cancellation" as cancellation {
+    id : BIGINT <<PK>>
+    --
+    trip_id : VARCHAR
+    reason : VARCHAR
+    reason_code : VARCHAR
+    cancellation_date : TIMESTAMP
+    status : VARCHAR
+    created_at : TIMESTAMP
+    updated_at : TIMESTAMP
+  }
+}
+
+' === RELACJE ===
+
+' Import -> wszystkie encje GTFS
+import ||..|{ agency
+import ||..|{ route
+import ||..|{ stop
+import ||..|{ calendar
+import ||..|{ trip
+import ||..|{ stop_time
+
+' Hierarchia GTFS
+agency ||..|{ route
+route ||..|{ trip
+trip ||..|{ stop_time
+stop ||..|{ stop_time
+
+' Dane dynamiczne
+trip ..o{ delay
+stop ..o{ delay
+trip ..o{ cancellation
+
+@enduml

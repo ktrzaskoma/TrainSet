@@ -1,0 +1,22 @@
+@startuml
+
+|schedule|
+start
+:Wywołanie metody Feign w serwisie **schedule**;
+:Serializacja obiektu Java do formatu JSON;
+:Zbudowanie żądania HTTP oraz jego wysyłka na \n wskazany w konfiguracji  adres URL;
+:Zablokowanie wątku i oczekiwanie przez **schedule**\nna wiadomość potwierdzającą poprawne przetworzenie;
+
+|notification|
+:Odbiór żądania HTTP przez **notification**;
+:Deserializacja JSON do obiektu Java;
+:Przetworzenie wiadomości przez serwis **notification**;
+:Wysłanie potwierdzenia odebrania wiadomości do serwisu **schedule**;
+
+|schedule|
+:Odebranie potwierdzenia i odblokowanie wątku;
+stop
+
+@enduml
+
+

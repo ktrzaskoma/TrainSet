@@ -1,0 +1,68 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+  
+  body {
+    @apply bg-gradient-to-br from-gray-50 to-gray-100 text-gray-900;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-primary-600 hover:bg-primary-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5;
+  }
+  
+  .btn-secondary {
+    @apply bg-white hover:bg-gray-50 text-gray-700 font-medium py-3 px-6 rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 shadow-md hover:shadow-lg border border-gray-200;
+  }
+  
+  .btn-accent {
+    @apply bg-accent-500 hover:bg-accent-600 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-accent-500 focus:ring-offset-2 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5;
+  }
+  
+  .card {
+    @apply bg-white rounded-2xl shadow-lg border border-gray-100 p-8 backdrop-blur-sm;
+  }
+  
+  .card-wkd {
+    @apply bg-gradient-to-br from-white to-blue-50 rounded-2xl shadow-xl border border-blue-100 p-8 backdrop-blur-sm;
+  }
+  
+  .input-field {
+    @apply block w-full rounded-xl border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm py-3 px-4 transition-all duration-200;
+  }
+  
+  .label {
+    @apply block text-sm font-semibold text-gray-700 mb-3;
+  }
+  
+  .train-route {
+    @apply flex items-center justify-center space-x-2 text-primary-600 font-semibold;
+  }
+  
+  .station-name {
+    @apply text-lg font-bold text-gray-900;
+  }
+  
+  .time-display {
+    @apply text-2xl font-bold text-gray-900;
+  }
+  
+  .status-active {
+    @apply bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-xs font-semibold;
+  }
+  
+  .status-pending {
+    @apply bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-xs font-semibold;
+  }
+  
+  .status-cancelled {
+    @apply bg-red-100 text-red-800 px-3 py-1 rounded-full text-xs font-semibold;
+  }
+}

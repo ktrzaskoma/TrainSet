@@ -1,0 +1,47 @@
+@startuml Trainset Architecture
+scale 2
+
+
+  node "trainset-frontend" <<Docker container>> #LightBlue {
+    component "frontend\n**Port: 3000**" as frontend
+  }
+  node "trainset-gateway" <<Docker container>> #LightGreen {
+    component "gateway\n**Port: 8080**" as gateway
+  }
+  node "trainset-schedule" <<Docker container>> #LightCoral {
+      component "schedule\n**Port: 8081**" as schedule
+  }
+  node "trainset-user" <<Docker container>> #LightYellow {
+    component "user \n**Port: 8084**" as user
+  }
+  node "trainset-ticketing" <<Docker container>> #LightSalmon {
+    component "ticketing\n**Port: 8082**" as ticketing
+  }
+  node "trainset-notification" <<Docker container>> #LightPink {
+    component "notification\n**Port: 8083**" as notification
+  }
+  
+  node "trainset-postgres\n**Port: 5432**" <<Docker container>> #LightSteelBlue {
+    database "trainset_schedule" as db_schedule
+    database "trainset_user" as db_user
+    database "trainset_ticketing" as db_ticketing
+    database "trainset_notification" as db_notification
+  }
+
+frontend <--> gateway : HTTP
+gateway <--> schedule : HTTP
+gateway <--> user : HTTP
+gateway <--> ticketing : HTTP
+gateway <--> notification : HTTP
+
+user <.> schedule: HTTP
+schedule <.> ticketing: HTTP
+ticketing <.> notification: HTTP
+
+schedule <--> db_schedule : JDBC
+user <--> db_user : JDBC
+ticketing <--> db_ticketing : JDBC
+notification <--> db_notification : JDBC
+
+@enduml
+
