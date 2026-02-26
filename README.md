@@ -213,3 +213,8 @@ A single PostgreSQL 16 instance hosts four separate schemas, one per microservic
 | `trainset_notification` | notification |
 
 Schema initialization is performed automatically on first startup via `trainset_init.sql`.
+
+
+## Disclaimer
+
+The TrainSet app is part of an engineering thesis.
